@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review</title>
+</head>
+<body>
+    <form action="/review" method="POST">
+        <label for="review"><b>Review</b></label>
+      <input type="text" placeholder="Enter review" name="review" required>
+        
+      <button type="submit">Review</button>
+    </form>  
+
+    <h2>All Reviews</h2>
+        {% for review in reviews %}
+    <p>{{ review[2] | safe }}</p>
+        {% endfor %}
+
+</body>
+</html>
