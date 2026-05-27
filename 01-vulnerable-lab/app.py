@@ -55,11 +55,10 @@ def review():
         conn.close()
     conn = sqlite3.connect('app.db')
     cursor = conn.cursor()       
-    cursor.execute(f"SELECT * FROM reviews")
+    cursor.execute("SELECT * FROM reviews")
     reviews = cursor.fetchall()
     conn.close()
     return render_template('review.html', reviews=reviews)
 
 # สั่งให้ app เริ่มทำงาน
-app.run(debug=True)
-
+app.run(debug=True, host='0.0.0.0')
