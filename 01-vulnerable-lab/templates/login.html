@@ -6,6 +6,14 @@
     <title>Login</title>
 </head>
 <body>
+    <nav>
+      <a href="{{ url_for('register') }}">Register</a> |
+      <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('profile') }}">Profile</a> |
+      <a href="{{ url_for('review') }}">Review</a>
+    </nav>
+<br>
+<br>
       <form action="/login" method="POST">
         <label for="username"><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="username" required>

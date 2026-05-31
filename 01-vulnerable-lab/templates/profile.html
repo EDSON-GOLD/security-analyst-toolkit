@@ -6,8 +6,17 @@
     <title>Profile</title>
 </head>
 <body>
+    <nav>
+      <a href="{{ url_for('register') }}">Register</a> |
+      <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('profile') }}">Profile</a> |
+      <a href="{{ url_for('review') }}">Review</a>
+    </nav>
+<br>
+<br>
     <h1>Welcome {{ user[1] }}</h1>
     <p>Email: {{ user[3] }}</p>
     <p>Phone: {{ user[4] }}</p>
+    
 </body>
 </html>

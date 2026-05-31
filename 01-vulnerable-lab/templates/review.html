@@ -6,6 +6,15 @@
     <title>Review</title>
 </head>
 <body>
+    <nav>
+      <a href="{{ url_for('register') }}">Register</a> |
+      <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('profile') }}">Profile</a> |
+      <a href="{{ url_for('review') }}">Review</a>
+    </nav>
+<br>
+<br>
+
     <form action="/review" method="POST">
         <label for="review"><b>Review</b></label>
       <input type="text" placeholder="Enter review" name="review" required>
