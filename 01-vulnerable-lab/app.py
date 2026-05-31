@@ -1,7 +1,19 @@
 from flask import Flask, render_template, request, redirect    
 import sqlite3
+import logging, json
+from datetime import datetime, timezone
+
+# --- security event logger (แยกออกจาก root / Werkzeug) ---
+security_logger = logging.getLogger('security')        # 1. ขอ logger ชื่อ 'security'
+security_logger.setLevel(logging.INFO)                 # 2. เก็บตั้งแต่ระดับ INFO ขึ้นไป
+handler = logging.FileHandler('security.log')          # 3. ปลายทาง = ไฟล์
+handler.setFormatter(logging.Formatter('%(message)s')) # 4. เอาแค่ message ดิบ (JSON ล้วนๆ)
+security_logger.addHandler(handler)                    # 5. ผูก handler เข้ากับ logger
+security_logger.propagate = False                      # 6. ห้าม bubble ขึ้นไป root
+# ---
 
 app = Flask(__name__)             # สร้าง app
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -27,6 +39,16 @@ def login():
         cursor.execute(f"SELECT * FROM users WHERE username='{username}' AND password='{password}'")
         user = cursor.fetchone()  
         conn.close()
+
+        result = "success" if user else "failed"   # ← แปลงผลก่อน
+        security_logger.info(json.dumps({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "event": "login_attempt",
+            "src_ip": request.remote_addr,           # ← Flask ให้ IP มาทางนี้
+            "username": username,
+            "result": result
+        }))
+
         if user: 
             return redirect('/profile?id=' + str(user[0]))
         else:
