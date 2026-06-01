@@ -1,0 +1,22 @@
+title: SQLi Auth Bypass Succeeded - Single Quote in Login Username
+id: ec284efe-d72b-436c-8cf8-61e238e66d68
+status: experimental
+description: Successful login where the username contains a single quote, indicating a successful SQL injection authentication bypass.
+references:
+  - https://owasp.org/Top10/A03_2021-Injection/  # อ้างอิง
+author: EDSON                          # ผู้สร้าง
+date: 2026/06/01                       # วันที่สร้าง
+logsource:
+  product: vuln-lab                    # product: vuln-lab
+  service: auth                        #เซอร์วิสยืนยันตัวตน
+detection: 
+  selection:                           # เงื่อนไข
+    event: login_attempt               # ค้นหา event ที่ผ่านการ login_attempt 
+    username|contains: "'"             # ค้นหา username ที่มีอักขระพิเศษ " ' " 
+    result: success                    # ค้นหา สถานะการ login สำเร็จ
+  condition: selection                 # เงื่อนไข การค้นหา
+falsepositives:                        # เงื่อนไขยกเว้น
+  - Legitimate usernames containing an apostrophe (e.g. O'Brien) - mitigated if registration blocks "'"
+level: critical                          #ลำดับความสำคัญเร่งด่วน
+tags:
+  - attack.initial_access
