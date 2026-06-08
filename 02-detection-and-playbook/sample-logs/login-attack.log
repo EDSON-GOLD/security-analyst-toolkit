@@ -1,1 +1,6 @@
-{"timestamp": "2026-05-31T15:11:26.593933+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "' OR 1=1--", "result": "success"}
+{"timestamp": "2026-06-08T09:52:57.333287+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "test", "result": "success"}
+{"timestamp": "2026-06-08T09:53:11.209402+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "test", "result": "failed"}
+{"timestamp": "2026-06-08T09:53:51.590178+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "' OR 1=1--", "result": "success"}
+{"timestamp": "2026-06-08T10:08:00.329747+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "alice", "result": "failed"}
+{"timestamp": "2026-06-08T10:08:19.356808+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "bob", "result": "failed"}
+{"timestamp": "2026-06-08T10:19:25.523463+00:00", "event": "login_attempt", "src_ip": "172.18.0.1", "username": "' OR 1=2-- ", "result": "failed"}
