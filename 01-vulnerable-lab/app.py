@@ -82,5 +82,38 @@ def review():
     conn.close()
     return render_template('review.html', reviews=reviews)
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    message = ""
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        new_password = request.form['new_password']
+
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+
+        # VULNERABLE: ใช้ f-string
+        cursor.execute(f"""
+            SELECT * FROM users 
+            WHERE username='{username}' AND email='{email}'
+        """)
+        user = cursor.fetchone()
+
+        if user:
+            # VULNERABLE: update password ตรง ๆ 
+            cursor.execute(f"""
+                UPDATE users 
+                SET password='{new_password}'
+                WHERE username='{username}'
+            """)
+            conn.commit()
+            message = "Password updated successfully"
+        else:
+            message = "Invalid username or email"
+
+        conn.close()
+    return render_template('forgot_password.html', message=message)
+
 # สั่งให้ app เริ่มทำงาน
 app.run(debug=True, host='0.0.0.0')
