@@ -10,12 +10,12 @@ These aren't separate exercises. They follow **one deliberately vulnerable appli
 
 | Section | What it is | What it demonstrates |
 |---------|-----------|----------------------|
-| **01 — Vulnerable Lab** | A Flask + SQLite app I built with SQL Injection, Stored XSS, and IDOR, containerized with Docker | Understanding each flaw well enough to *create* it, not just exploit it — the offense and code-review side |
+| **01 — Vulnerable Lab** | A Flask + SQLite app I built with SQL Injection, Stored XSS, IDOR, and Insecure Password Reset, containerized with Docker | Understanding each flaw well enough to *create* it, not just exploit it — the offense and code-review side |
 | **02 — Detection & Playbook** | Sigma detection rules + an incident-response playbook for attacks against the lab | The defender's view — you can't detect what you don't log |
 | **03 — Automation** | A Python script that triages the lab's auth logs and flags SQLi login-bypass, reusing the same logic as the Section 02 Sigma rules | Turning detection logic into automation — the triage / scale side |
 | **04 — Pentest Report** | A professional report on the lab's findings, with root-cause analysis and developer-actionable remediation | Communicating findings so a developer can act on them — the handoff most reports get wrong |
 
-The same `id` parameter that exposes data through IDOR in Section 01 is also the SQL injection sink — and because passwords are stored in plaintext, that chain ends in full account takeover. Tracing the chain end-to-end (01), detecting it (02), and reporting it for a structural fix (04) is the point.
+The same `id` parameter that exposes data through IDOR in Section 01 is also the SQL injection sink — and because passwords are stored in plaintext, that chain ends in full account takeover. The same IDOR also feeds a **second** takeover path through an insecure password-reset flow, which still works even after the SQL injection is fixed. Tracing the chains end-to-end (01), detecting them (02), and reporting them for a structural fix (04) is the point.
 
 ## Quick start (Section 01 lab)
 
@@ -24,7 +24,7 @@ cd 01-vulnerable-lab
 docker-compose up --build
 ```
 
-Then open **http://localhost:5000** and navigate Register / Login / Profile / Review.
+Then open **http://localhost:5000** and navigate Register / Login / Profile / Review / Forgot Password.
 
 > ⚠️ This lab is **intentionally vulnerable** and for educational / portfolio use only. Do not deploy it to any internet-facing environment.
 
@@ -35,4 +35,4 @@ Then open **http://localhost:5000** and navigate Register / Login / Profile / Re
 - **Infrastructure:** Docker, docker-compose
 - **Detection:** Sigma rules, JSON-structured application logging
 - **Testing:** Burp Suite, Nmap
-- **Standards:** OWASP Top 10 (A01, A02, A03, A05)
+- **Standards:** OWASP Top 10 (A01, A02, A03, A04, A05, A07)

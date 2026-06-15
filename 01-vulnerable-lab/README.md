@@ -1,6 +1,6 @@
 # Vulnerable Lab — Security Analyst Toolkit (Section 01)
 
-A deliberately vulnerable web application built with **Flask + SQLite**, containerized with **Docker**. It implements three OWASP-relevant vulnerabilities — **SQL Injection, Stored XSS, and IDOR** — to demonstrate hands-on understanding of how each flaw arises, what an attacker can do with it, and how to fix it properly.
+A deliberately vulnerable web application built with **Flask + SQLite**, containerized with **Docker**. It implements four OWASP-relevant vulnerabilities — **SQL Injection, Stored XSS, IDOR, and Insecure Password Reset** — to demonstrate hands-on understanding of how each flaw arises, what an attacker can do with it, and how to fix it properly.
 
 ## Why build it from scratch (instead of DVWA / Juice Shop)
 
@@ -17,7 +17,7 @@ DVWA and OWASP Juice Shop are excellent references, and I studied them. But I bu
 docker-compose up --build
 ```
 
-Then open **http://localhost:5000** and navigate between Register / Login / Profile / Review.
+Then open **http://localhost:5000** and navigate between Register / Login / Profile / Review / Forgot Password.
 
 ---
 
@@ -51,6 +51,16 @@ Then open **http://localhost:5000** and navigate between Register / Login / Prof
   2. **Authentication check** — require login before the profile page is reachable.
   3. **Defense-in-depth** — unguessable references (UUID) or an indirect reference map reduce enumeration risk, but are **not** a fix on their own without the authorization check.
 
+### 4. Insecure Password Reset — Forgot-password flow (`/forgot_password`)
+
+- **Root cause** — The reset flow verifies identity using only the client-supplied `username` + `email`, then updates the password directly. Both values are *knowable* — they are exposed by the IDOR on `/profile` — and there is no secure verification step (no reset token sent to the registered email, no out-of-band confirmation). The queries are also built with f-strings, so the endpoint is an additional SQL injection sink.
+- **Impact** — Account takeover of any user (including admin) without authentication. Critically, this is a **second, parallel takeover path**: it keeps working even after the `/profile` SQL injection is fixed, as long as the IDOR keeps leaking the username and email that the reset flow trusts as proof of identity. (Documented as **TIC-004** in the Section 04 pentest report.)
+- **Remediation**
+  1. **Secure reset flow (primary fix)** — issue a single-use, time-limited token sent to the registered email; never reset based on a client-supplied username + email. *(A "current password" check belongs to a* change*-password flow, not a forgot-password flow — the user doesn't have the current password, which is why they are resetting.)*
+  2. **Parameterized queries** — the SELECT and UPDATE must use `?` placeholders, the same structural fix as the other SQLi sinks.
+  3. **Close the upstream IDOR (`/profile`)** — removing the username/email leak cuts off the identifiers this attack depends on.
+  4. **Defense-in-depth** — rate limiting and a generic response message to reduce account enumeration.
+
 ---
 
 ## Lessons / Challenges
@@ -58,7 +68,7 @@ Then open **http://localhost:5000** and navigate between Register / Login / Prof
 - **Two vulnerabilities collided.** Testing a Stored XSS payload `<script>alert('XSS')</script>` threw a SQL error — the single quote inside `alert('XSS')` closed the SQL `INSERT` string early. Both flaws share the same root cause (unhandled user input), so they fought over breaking the SQL structure. Workaround for testing: double quotes.
 - **`venv/` leaked into git.** Added `venv/` and `*.db` to `.gitignore`, then used `git rm --cached` to remove what was already pushed.
 - **Docker file-sync confusion.** Without a volume mount, editing template files on the host doesn't update a running container — the image is a build-time snapshot. Rebuilding with `docker-compose up --build` solved it. This surfaced the tradeoff between dev convenience (volume mount) and production reproducibility (`COPY` into the image).
-- **A recurring pattern when fixing injection / access-control flaws.** The real fix is structural — parameterized queries, server-side authorization checks — not blocklisting "bad" input. Input filtering loses to creative attackers and belongs in the supplementary layer, never the primary defense.
+- **A recurring pattern when fixing injection / access-control flaws.** The real fix is structural — parameterized queries, server-side authorization checks, out-of-band identity verification — not blocklisting "bad" input. Input filtering loses to creative attackers and belongs in the supplementary layer, never the primary defense.
 
 ---
 
