@@ -1,0 +1,7 @@
+# เพิ่มใน volumes: ของ service wazuh.manager (docker-compose.yml ของ Wazuh single-node)
+# เพื่อ (1) ให้ Wazuh อ่าน log ของ lab และ (2) โหลด custom rule จาก host
+
+volumes:
+  # ... (volume เดิมของ Wazuh) ...
+  - /home/work/security-analyst-toolkit/01-vulnerable-lab/security.log:/var/log/lab/security.log
+  - ./config/custom-rules/local_rules.xml:/var/ossec/etc/rules/local_rules.xml

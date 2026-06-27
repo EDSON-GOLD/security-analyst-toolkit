@@ -2,3 +2,8 @@ interview-notes.md
 venv/
 *.db
 security.log
+
+# secrets / certs
+*.pem
+*.key
+*-key.pem

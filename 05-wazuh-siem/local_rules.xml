@@ -1,0 +1,21 @@
+<group name="local,sqli,">
+
+  <rule id="100010" level="3">
+    <field name="event">login_attempt</field>
+    <field name="username">'</field>
+    <description>SQLi indicator gate: single quote in username</description>
+  </rule>
+
+  <rule id="100011" level="15">
+    <if_sid>100010</if_sid>
+    <field name="result">success</field>
+    <description>SQLi auth bypass SUCCEEDED - sqli-login-success</description>
+  </rule>
+
+  <rule id="100012" level="7">
+    <if_sid>100010</if_sid>
+    <field name="result">failed</field>
+    <description>SQLi attempt, did not break in - sqli-login-attempt</description>
+  </rule>
+
+</group>

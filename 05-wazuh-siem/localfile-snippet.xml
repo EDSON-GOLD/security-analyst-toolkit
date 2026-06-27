@@ -1,0 +1,5 @@
+<!-- เพิ่มใน <ossec_config> ของ wazuh_manager.conf เพื่อให้ Wazuh อ่าน log ของ lab -->
+<localfile>
+  <log_format>json</log_format>
+  <location>/var/log/lab/security.log</location>
+</localfile>
