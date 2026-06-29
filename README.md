@@ -1,6 +1,6 @@
 # Security Analyst Toolkit
 
-> A web application security portfolio built on one idea: a real analyst doesn't stop at finding a vulnerability. Each section traces a flaw from **root cause to a structural fix a developer can act on** — across the find, the detection, and the report.
+> A web application security portfolio built on one idea: a real analyst doesn't stop at finding a vulnerability. Each section traces a flaw from **root cause to a structural fix a developer can act on** — across the find, the detection, the SIEM, and the report.
 
 Most security work gets siloed: the pentester finds a bug and throws it over the wall, the SOC analyst forwards an alert, the systems owner knows something is wrong but not how to fix it. This repository shows the opposite — one person following a vulnerability through the entire lifecycle, and making the output usable by the developers who have to fix it.
 
@@ -14,8 +14,11 @@ These aren't separate exercises. They follow **one deliberately vulnerable appli
 | **02 — Detection & Playbook** | Sigma detection rules + an incident-response playbook for attacks against the lab | The defender's view — you can't detect what you don't log |
 | **03 — Automation** | A Python script that triages the lab's auth logs and flags SQLi login-bypass, reusing the same logic as the Section 02 Sigma rules | Turning detection logic into automation — the triage / scale side |
 | **04 — Pentest Report** | A professional report on the lab's findings, with root-cause analysis and developer-actionable remediation | Communicating findings so a developer can act on them — the handoff most reports get wrong |
+| **05 — Wazuh SIEM** | The same SQLi login-bypass logic re-expressed as a native Wazuh rule, with the lab's logs ingested into a real SIEM and detected in real time | Proving detection logic inside a real SIEM, not on paper — a gate-first design that flags the attack while staying silent on legitimate logins (false-positive prevention) |
 
 The same `id` parameter that exposes data through IDOR in Section 01 is also the SQL injection sink — and because passwords are stored in plaintext, that chain ends in full account takeover. The same IDOR also feeds a **second** takeover path through an insecure password-reset flow, which still works even after the SQL injection is fixed. Tracing the chains end-to-end (01), detecting them (02), and reporting them for a structural fix (04) is the point.
+
+The detection logic itself is written once and proven in three forms: a portable **Sigma rule** (02), a standalone **Python triage parser** (03), and a real-time **native Wazuh rule** running in a SIEM (05) — same logic, three contexts.
 
 ## Quick start (Section 01 lab)
 
@@ -33,6 +36,7 @@ Then open **http://localhost:5000** and navigate Register / Login / Profile / Re
 - **App / language:** Python, Flask, Jinja2
 - **Data:** SQLite
 - **Infrastructure:** Docker, docker-compose
-- **Detection:** Sigma rules, JSON-structured application logging
+- **Detection:** Sigma rules, Wazuh native rules, JSON-structured application logging
+- **SIEM:** Wazuh 4.9.0 (single-node), real-time log ingestion and alerting
 - **Testing:** Burp Suite, Nmap
 - **Standards:** OWASP Top 10 (A01, A02, A03, A04, A05, A07)
